@@ -41,6 +41,19 @@ class Transform:
     def __str__(self) -> str:
         return self.name
 
+    def clone(self, new_transform_name: str, clear_mesh_data: bool = False) -> 'Transform':
+        mesh_data = self.mesh_data.clone(clear_mesh_data) if self.mesh_data is not None else None
+        return Transform(
+            name = new_transform_name,
+            position = self.position.clone(),
+            rotation = self.rotation.clone(),
+            scale = self.scale.clone(),
+            unity_tag = self.unity_tag,
+            unity_layer = self.unity_layer,
+
+            mesh_data = mesh_data
+        )
+
     def write(self, writer: ByteWriter):
         writer.write_str(self.name)
 

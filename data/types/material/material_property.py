@@ -20,7 +20,7 @@ class MaterialProperty:
             case MaterialPropertyFloat2():
                 return MaterialPropertyFloat2(self.name, self.value)
             case MaterialPropertyFloat3():
-                return MaterialPropertyFloat2(self.name, self.value)
+                return MaterialPropertyFloat3(self.name, self.value)
             case MaterialPropertyTexture():
                 return MaterialPropertyTexture(self.name, self.texture_index, self.scale.clone(), self.offset.clone())
         raise Exception(f"Unknown material property with name: {self.name}")

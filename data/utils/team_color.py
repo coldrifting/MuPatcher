@@ -80,10 +80,10 @@ TeamColorDb = {
     "mediumPurple":     TeamColor(Vec4(0.2,   0.07,   0.34),  0, 0.75, 1, 1),
 
     # Matte
-    "dullWhite":       TeamColor(Vec4(0.85, 0.85, 0.85), 0, 0.35, 1, 1),
-    "melancholyWhite": TeamColor(Vec4(0.57, 0.2,  1.0),  0, 0.35, 1, 1),
-    "cloudGrey":       TeamColor(Vec4(0.51, 0.07, 0.35), 0, 0.35, 1, 1),
-    "tileBlack":       TeamColor(Vec4(0.2,  0.07, 0.34), 0, 0.35, 1, 1),
+    "dullWhite":       TeamColor(Vec4(0.85,  0.85,  0.85), 0, 0.35, 1, 1),
+    "melancholyWhite": TeamColor(Vec4(0.65,  0.65,  0.65),  0, 0.35, 1, 1),
+    "cloudGrey":       TeamColor(Vec4(0.427, 0.427, 0.427), 0, 0.35, 1, 1),
+    "tileBlack":       TeamColor(Vec4(0.05,  0.05,  0.05), 0, 0.35, 1, 1),
 
     # Metallic
     "metalBasic":    TeamColor(Vec4(0.5,  0.5,    0.5),   1, 0.9, 0, 0),

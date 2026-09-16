@@ -9,6 +9,14 @@ class MeshRendererSettings:
         self.material_count = material_count
         self.material_index = material_index
 
+    def clone(self):
+        return MeshRendererSettings(
+            cast_shadows=self.cast_shadows,
+            receive_shadows=self.receive_shadows,
+            material_count=self.material_count,
+            material_index=self.material_index
+        )
+
     def write(self, writer: ByteWriter):
         writer.write_int(MuTag.MeshRenderer)
         writer.write_bool(self.cast_shadows)

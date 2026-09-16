@@ -1,7 +1,7 @@
 from data.utils.errors import AttributeInvalidError
 
 
-def get_range(range_str: str) -> list[int]:
+def get_range(range_str: str) -> set[int]:
     output_range = []
     for range_or_num in [x.strip() for x in range_str.split(',')]:
         if '-' in range_or_num:
@@ -15,4 +15,4 @@ def get_range(range_str: str) -> list[int]:
             output_range.append(int(range_or_num))
 
     output_range.sort()
-    return output_range
+    return set(output_range)

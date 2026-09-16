@@ -1,6 +1,10 @@
 from data.types.core.byte_reader import ByteReader
 from data.types.core.byte_writer import ByteWriter
-from data.types.transform.mesh.mesh_data_item import MeshDataItem
+from data.types.core.int2 import Int2
+from data.types.core.int3 import Int3
+from data.types.transform.mesh.mesh_data_item import MeshDataItem, MeshDataItemVertices, MeshDataItemUvs, \
+    MeshDataItemNormals, MeshDataItemTangents, MeshDataItemTriangles, MeshDataItemBoneWeights, MeshDataItemBindPoses, \
+    MeshDataItemVertexColors
 from data.types.transform.mesh.mesh_renderer_settings import MeshRendererSettings
 from data.types.mu_tag import MuTag
 
@@ -21,6 +25,73 @@ class MeshData:
 
     def __str__(self) -> str:
         return f"Mesh Data (Vertices: {self.vertex_count})"
+
+    def clone(self, clear: bool = False) -> 'MeshData':
+        items_new: dict[MuTag, MeshDataItem] = {}
+        for item in self.items.values():
+            item_new = item.clone()
+            match item_new:
+                case MeshDataItemVertices():
+                    items_new[MuTag.MeshVertices] = MeshDataItemVertices([]) if clear else item_new
+                case MeshDataItemUvs():
+                    uvs = MeshDataItemUvs([], item_new.is_uv2) if clear else item_new
+                    if item_new.is_uv2:
+                        items_new[MuTag.MeshUv2] = uvs
+                    else:
+                        items_new[MuTag.MeshUv] = uvs
+                case MeshDataItemNormals():
+                    items_new[MuTag.MeshNormals] = MeshDataItemNormals([]) if clear else item_new
+                case MeshDataItemTangents():
+                    items_new[MuTag.MeshTangents] = MeshDataItemTangents([]) if clear else item_new
+                case MeshDataItemTriangles():
+                    items_new[MuTag.MeshTriangles] = MeshDataItemTriangles([]) if clear else item_new
+                case MeshDataItemBoneWeights():
+                    items_new[MuTag.MeshBoneWeights] = MeshDataItemBoneWeights([]) if clear else item_new
+                case MeshDataItemBindPoses():
+                    items_new[MuTag.MeshBindPoses] = MeshDataItemBindPoses([]) if clear else item_new
+                case MeshDataItemVertexColors():
+                    items_new[MuTag.MeshVertexColors] = MeshDataItemVertexColors([]) if clear else item_new
+
+        return MeshData(
+            0 if clear else self.vertex_count,
+            1 if clear else self.submesh_count,
+            items_new,
+            self.render_settings.clone())
+
+    def merge(self, other: 'MeshData'):
+        self_keys = set(self.items.keys())
+        other_keys = set(other.items.keys())
+
+        all_keys = self_keys.union(other_keys)
+        all_keys.remove(MuTag.MeshVertices)
+        all_keys.remove(MuTag.MeshTriangles)
+
+        for key in all_keys:
+            self_item = self.items.get(key, None)
+            other_item = other.items.get(key, None)
+            if self_item is None and other_item is None:
+                continue
+
+            self.items[key] = MeshDataItem.merge(self_item, other_item, Int2(self.vertex_count, other.vertex_count))
+
+        self_vertices = self.items[MuTag.MeshVertices]
+        other_vertices = other.items[MuTag.MeshVertices]
+        if isinstance(self_vertices, MeshDataItemVertices) and isinstance(other_vertices, MeshDataItemVertices):
+            for vertex in other_vertices.vertices:
+                self_vertices.vertices.append(vertex)
+
+        self_triangles = self.items[MuTag.MeshTriangles]
+        other_triangles = other.items[MuTag.MeshTriangles]
+        if isinstance(self_triangles, MeshDataItemTriangles) and isinstance(other_triangles, MeshDataItemTriangles):
+            for triangle in other_triangles.triangles:
+                triangle_updated = Int3(
+                    triangle.x + len(self_vertices.vertices) - len(other_vertices.vertices),
+                    triangle.y + len(self_vertices.vertices) - len(other_vertices.vertices),
+                    triangle.z + len(self_vertices.vertices) - len(other_vertices.vertices),
+                )
+                self_triangles.triangles.append(triangle_updated)
+
+        self.vertex_count += other.vertex_count
 
     def write(self, writer: ByteWriter):
         writer.write_int(MuTag.MeshStart)

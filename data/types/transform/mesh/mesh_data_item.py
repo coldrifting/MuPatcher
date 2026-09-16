@@ -1,6 +1,7 @@
 from data.types.core.byte_reader import ByteReader
 from data.types.core.byte_writer import ByteWriter
 from data.types.core.color_byte import ColorByte
+from data.types.core.int2 import Int2
 from data.types.core.vec2 import Vec2
 from data.types.core.vec3 import Vec3
 from data.types.core.vec4 import Vec4
@@ -37,6 +38,90 @@ class MeshDataItem:
 
         raise Exception(f"Unknown tag with id: {reader.preview()}")
 
+    def clone(self: 'MeshDataItem') -> 'MeshDataItem':
+        match self:
+            case MeshDataItemVertices():
+                vertices = [x.clone() for x in self.vertices]
+                return MeshDataItemVertices(vertices)
+            case MeshDataItemUvs():
+                uvs = [x.clone() for x in self.uvs]
+                return MeshDataItemUvs(uvs, self.is_uv2)
+            case MeshDataItemNormals():
+                normals = [x.clone() for x in self.normals]
+                return MeshDataItemNormals(normals)
+            case MeshDataItemTangents():
+                tangents = [x.clone() for x in self.tangents]
+                return MeshDataItemTangents(tangents)
+            case MeshDataItemTriangles():
+                triangles = [x.clone() for x in self.triangles]
+                return MeshDataItemTriangles(triangles)
+            case MeshDataItemBoneWeights():
+                bone_weights = [x for x in self.bone_weights]
+                return MeshDataItemBoneWeights(bone_weights)
+            case MeshDataItemBindPoses():
+                poses = [x for x in self.poses]
+                return MeshDataItemBindPoses(poses)
+            case MeshDataItemVertexColors():
+                vertex_colors = [x.clone() for x in self.vertex_colors]
+                return MeshDataItemVertexColors(vertex_colors)
+
+        raise Exception(f"Unknown class: {str(self)}")
+
+    @staticmethod
+    def merge(left: 'MeshDataItem', right: 'MeshDataItem', size: Int2) -> 'MeshDataItem':
+        if isinstance(left, MeshDataItemUvs) and isinstance(right, MeshDataItemUvs):
+            left.uvs.extend(right.uvs)
+            return left
+        elif isinstance(left, MeshDataItemUvs) and right is None:
+            left.uvs.extend([Vec2(0,0) for _ in range(size.y)])
+            return left
+        elif left is None and isinstance(right, MeshDataItemUvs):
+            right.uvs.extend([Vec2(0,0) for _ in range(size.x)])
+            return right
+
+        if isinstance(left, MeshDataItemNormals) and isinstance(right, MeshDataItemNormals):
+            left.normals.extend(right.normals)
+            return left
+        elif isinstance(left, MeshDataItemNormals) and right is None:
+            left.normals.extend([Vec3(0,0, 0) for _ in range(size.y)])
+            return left
+        elif left is None and isinstance(right, MeshDataItemNormals):
+            right.normals.extend([Vec3(0,0, 0) for _ in range(size.x)])
+            return right
+
+        if isinstance(left, MeshDataItemTangents) and isinstance(right, MeshDataItemTangents):
+            left.tangents.extend(right.tangents)
+            return left
+        elif isinstance(left, MeshDataItemTangents) and right is None:
+            left.tangents.extend([Vec4(0,0, 0, 0) for _ in range(size.y)])
+            return left
+        elif left is None and isinstance(right, MeshDataItemTangents):
+            right.tangents.extend([Vec4(0,0, 0, 0) for _ in range(size.x)])
+            return right
+
+        if isinstance(left, MeshDataItemVertexColors) and isinstance(right, MeshDataItemVertexColors):
+            left.vertex_colors.extend(right.vertex_colors)
+            return left
+        elif isinstance(left, MeshDataItemVertexColors) and right is None:
+            left.vertex_colors.extend([ColorByte(255,255, 255, 255) for _ in range(size.y)])
+            return left
+        elif left is None and isinstance(right, MeshDataItemVertexColors):
+            right.vertex_colors.extend([ColorByte(255,255, 255, 255) for _ in range(size.x)])
+            return right
+
+        if isinstance(left, MeshDataItemBoneWeights) and isinstance(right, MeshDataItemBoneWeights):
+            left.bone_weights.extend(right.bone_weights)
+            return left
+        elif isinstance(left, MeshDataItemBoneWeights) and right is None:
+            left.bone_weights.extend([BoneWeight(Int4(0,0,0,0), Vec4(0,0,0,0)) for _ in range(size.y)])
+            return left
+        elif left is None and isinstance(right, MeshDataItemBoneWeights):
+            right.bone_weights.extend([BoneWeight(Int4(0,0,0,0), Vec4(0,0,0,0)) for _ in range(size.x)])
+            return right
+
+
+        raise Exception(f"Unknown types: {type(left)}, {type(right)}")
+
 
 class MeshDataItemBindPoses(MeshDataItem):
     def __init__(self, poses: list[int]):
@@ -72,14 +157,10 @@ class MeshDataItemBoneWeights(MeshDataItem):
     def __init__(self, bone_weights: list[BoneWeight]):
         self.bone_weights = bone_weights
 
-    def cut(self, cut_indices: list[int]) -> 'MeshDataItemBoneWeights':
-        cut_bone_weights = []
+    def delete(self, indices: set[int]):
         for i in reversed(range(len(self.bone_weights))):
-            if i in cut_indices:
-                cut_bone_weights.append(self.bone_weights[i])
+            if i in indices:
                 del self.bone_weights[i]
-
-        return MeshDataItemBoneWeights(list(reversed(cut_bone_weights)))
 
     def paste(self, pasted_bone_weights: 'MeshDataItemBoneWeights'):
         for bone_weight in pasted_bone_weights.bone_weights:
@@ -109,14 +190,13 @@ class MeshDataItemNormals(MeshDataItem):
     def __init__(self, normals: list[Vec3]):
         self.normals = normals
 
-    def cut(self, cut_indices: list[int]) -> 'MeshDataItemNormals':
-        cut_normals = []
-        for i in reversed(range(len(self.normals))):
-            if i in cut_indices:
-                cut_normals.append(self.normals[i])
-                del self.normals[i]
+    def __str__(self):
+        return f"Normals: {len(self.normals)}"
 
-        return MeshDataItemNormals(list(reversed(cut_normals)))
+    def delete(self, indices: set[int]):
+        for i in reversed(range(len(self.normals))):
+            if i in indices:
+                del self.normals[i]
 
     def paste(self, pasted_normals: 'MeshDataItemNormals'):
         for normal in pasted_normals.normals:
@@ -144,14 +224,13 @@ class MeshDataItemTangents(MeshDataItem):
     def __init__(self, tangents: list[Vec4]):
         self.tangents = tangents
 
-    def cut(self, cut_indices: list[int]) -> 'MeshDataItemTangents':
-        cut_tangents = []
-        for i in reversed(range(len(self.tangents))):
-            if i in cut_indices:
-                cut_tangents.append(self.tangents[i])
-                del self.tangents[i]
+    def __str__(self):
+        return f"Tangents: {len(self.tangents)}"
 
-        return MeshDataItemTangents(list(reversed(cut_tangents)))
+    def delete(self, indices: set[int]):
+        for i in reversed(range(len(self.tangents))):
+            if i in indices:
+                del self.tangents[i]
 
     def paste(self, pasted_tangents: 'MeshDataItemTangents'):
         for tangent in pasted_tangents.tangents:
@@ -179,24 +258,8 @@ class MeshDataItemTriangles(MeshDataItem):
     def __init__(self, triangles: list[Int3]):
         self.triangles = triangles
 
-    def cut(self, cut_indices: list[int], new_mapping: dict[int,int]) -> 'MeshDataItemTriangles':
-        cut_triangles = []
-        for i in reversed(range(len(self.triangles))):
-            if (self.triangles[i].x in cut_indices) or (self.triangles[i].y in cut_indices) or (self.triangles[i].z in cut_indices):
-                cut_triangles.append(
-                    Int3(
-                        new_mapping[self.triangles[i].x],
-                        new_mapping[self.triangles[i].y],
-                        new_mapping[self.triangles[i].z]
-                    )
-                )
-                del self.triangles[i]
-            else:
-                self.triangles[i].x = new_mapping[self.triangles[i].x]
-                self.triangles[i].y = new_mapping[self.triangles[i].y]
-                self.triangles[i].z = new_mapping[self.triangles[i].z]
-
-        return MeshDataItemTriangles(list(reversed(cut_triangles)))
+    def __str__(self):
+        return f"Triangles: {len(self.triangles)}"
 
     def paste(self, pasted_triangles: 'MeshDataItemTriangles', num_vertices: int):
         for i in range(len(pasted_triangles.triangles)):
@@ -205,9 +268,6 @@ class MeshDataItemTriangles(MeshDataItem):
                 pasted_triangles.triangles[i].y + num_vertices,
                 pasted_triangles.triangles[i].z + num_vertices
             ))
-
-    def __str__(self) -> str:
-        return "Num Triangles: " + str(len(self.triangles))
 
     def write(self, writer: ByteWriter):
         writer.write_int(MuTag.MeshTriangles)
@@ -234,14 +294,13 @@ class MeshDataItemUvs(MeshDataItem):
         self.uvs = uvs
         self.is_uv2 = is_uv2
 
-    def cut(self, cut_indices: list[int]) -> 'MeshDataItemUvs':
-        cut_uvs = []
-        for i in reversed(range(len(self.uvs))):
-            if i in cut_indices:
-                cut_uvs.append(self.uvs[i])
-                del self.uvs[i]
+    def __str__(self):
+        return f"Uv{'2' if self.is_uv2 else ''}s: {len(self.uvs)}"
 
-        return MeshDataItemUvs(list(reversed(cut_uvs)), self.is_uv2)
+    def delete(self, indices: set[int]):
+        for i in reversed(range(len(self.uvs))):
+            if i in indices:
+                del self.uvs[i]
 
     def paste(self, pasted_uvs: 'MeshDataItemUvs'):
         for uv in pasted_uvs.uvs:
@@ -274,14 +333,13 @@ class MeshDataItemVertexColors(MeshDataItem):
     def __init__(self, vertex_colors: list[ColorByte]):
         self.vertex_colors = vertex_colors
 
-    def cut(self, cut_indices: list[int]) -> 'MeshDataItemVertexColors':
-        cut_vertex_colors = []
-        for i in reversed(range(len(self.vertex_colors))):
-            if i in cut_indices:
-                cut_vertex_colors.append(self.vertex_colors[i])
-                del self.vertex_colors[i]
+    def __str__(self):
+        return f"Vertex Colors: {len(self.vertex_colors)}"
 
-        return MeshDataItemVertexColors(list(reversed(cut_vertex_colors)))
+    def delete(self, indices: set[int]):
+        for i in reversed(range(len(self.vertex_colors))):
+            if i in indices:
+                del self.vertex_colors[i]
 
     def paste(self, pasted_vertex_colors: 'MeshDataItemVertexColors'):
         for vertex_color in pasted_vertex_colors.vertex_colors:
@@ -309,14 +367,13 @@ class MeshDataItemVertices(MeshDataItem):
     def __init__(self, vertices: list[Vec3]):
         self.vertices = vertices
 
-    def cut(self, cut_indices: list[int]) -> 'MeshDataItemVertices':
-        cut_vertices = []
-        for i in reversed(range(len(self.vertices))):
-            if i in cut_indices:
-                cut_vertices.append(self.vertices[i])
-                del self.vertices[i]
+    def __str__(self):
+        return f"Vertices: {len(self.vertices)}"
 
-        return MeshDataItemVertices(list(reversed(cut_vertices)))
+    def delete(self, indices: set[int]):
+        for i in reversed(range(len(self.vertices))):
+            if i in indices:
+                del self.vertices[i]
 
     def paste(self, pasted_vertices: 'MeshDataItemVertices'):
         for vertex in pasted_vertices.vertices:

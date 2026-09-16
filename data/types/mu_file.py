@@ -39,6 +39,23 @@ class MuFile:
 
         raise AttributeNotFoundError(f'Transform with mesh data with name {mesh_name} not found in file')
 
+    def clone_transform(self, transform_name: str, new_transform_name: str, clear_mesh_data: bool = False) -> Transform:
+        queue: deque[list[Transform]] = deque()
+        queue.append(self.root_transform.children)
+
+        while len(queue) > 0:
+            transforms: list[Transform] = queue.pop()
+            for child in transforms:
+                if child.name == transform_name:
+                    new_transform = child.clone(new_transform_name, clear_mesh_data)
+                    transforms.append(new_transform)
+                    return new_transform
+
+                queue.append(child.children)
+
+        raise AttributeNotFoundError(f'Transform with name {transform_name} not found in file')
+
+
     def get_material(self, material_name) -> Material:
         for material in self.materials:
             if material.name == material_name:
@@ -59,13 +76,14 @@ class MuFile:
             if material_property.name == property_name:
                 return material_property
 
+        raise AttributeNotFoundError(f'Material property with name {property_name} not found in material {material_name}')
+
     def get_texture_index(self, texture_name) -> int:
         for index, texture in enumerate(self.textures):
             if texture.name == texture_name:
                 return index
 
         raise AttributeNotFoundError(f'Texture with name {texture_name} not found in file. Did you forget a file extension?')
-
 
     def write(self, writer: ByteWriter | None = None) -> bytes:
         # Allow passing in a custom writer for testing
