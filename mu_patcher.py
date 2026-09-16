@@ -23,6 +23,8 @@ from data.utils.errors import AttributeInvalidError, AttributeNotFoundError, Att
 from data.utils.get_range import get_range
 from data.utils.terminal_colors import warn, error
 
+print("[Patching Meshes]")
+
 if len(sys.argv) < 2:
     warn("No patch file specified")
     warn(f"Usage: python {sys.argv[0]} /path/to/patch_file.yaml")
@@ -30,11 +32,25 @@ if len(sys.argv) < 2:
 
 patch_file = sys.argv[1]
 
+if not Path(patch_file).exists():
+    error(f"Patch file {patch_file} not found")
+    exit(1)
+
 with open(patch_file, "r") as file:
     patch_data = yaml.safe_load(file)
 
-game_data_dir = Path(patch_data["game_data_dir"])
-dest_dir = Path(patch_data["dest_dir"])
+game_data_str = patch_data.get("game_data_dir", None)
+if game_data_str is None:
+    error("Game data directory not specified")
+    exit(1)
+
+dest_dir_str = patch_data.get("dest_dir", None)
+if dest_dir_str is None:
+    error("Destination mod directory not specified")
+    exit(1)
+
+game_data_dir = Path(game_data_str)
+dest_dir = Path(game_data_dir / dest_dir_str)
 
 output: list[Tuple[Path, bytes]] = []
 
@@ -48,7 +64,7 @@ try:
         file_src = Path(game_data_dir / model_name)
 
         # Replace root folder of asset in game data dir with dest dir
-        file_dst = Path(game_data_dir / dest_dir / Path(*Path(model_name).parts[1:]))
+        file_dst = Path(dest_dir / Path(*Path(model_name).parts[1:]))
 
         print(model_name)
 
