@@ -19,7 +19,7 @@ class AnimData:
         writer.write_bool(self.autoplay)
 
     @staticmethod
-    def read(reader: ByteReader) -> AnimData:
+    def read(reader: ByteReader) -> 'AnimData':
         reader.read_int()  # Consume Tag
 
         clips = []

@@ -23,7 +23,7 @@ class ColliderDataItemCapsule:
         writer.write_vec3(self.center)
 
     @staticmethod
-    def read(reader: ByteReader) -> ColliderDataItemCapsule:
+    def read(reader: ByteReader) -> 'ColliderDataItemCapsule':
         radius = reader.read_float()
         height = reader.read_float()
         direction = reader.read_int()

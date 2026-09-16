@@ -20,7 +20,7 @@ class Material:
             prop.write(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> Material:
+    def read(reader: ByteReader) -> 'Material':
         name = reader.read_str()
         shader_name = reader.read_str()
 

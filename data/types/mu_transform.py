@@ -23,7 +23,7 @@ class Transform:
                  anim_data: AnimData | None = None,
                  skinned_mesh_data: SkinnedMeshData | None = None,
                  light_data: LightData | None = None,
-                 children: list[Transform] | None = None):
+                 children: list['Transform'] | None = None):
         self.name = name
         self.position = position
         self.rotation = rotation
@@ -75,7 +75,7 @@ class Transform:
                 writer.write_int(MuTag.ChildTransformEnd)
 
     @staticmethod
-    def read(reader: ByteReader) -> Transform:
+    def read(reader: ByteReader) -> 'Transform':
         name = reader.read_str()
 
         position = reader.read_vec3()

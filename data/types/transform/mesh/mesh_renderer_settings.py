@@ -17,7 +17,7 @@ class MeshRendererSettings:
         writer.write_int(self.material_index)
 
     @staticmethod
-    def read(reader: ByteReader) -> MeshRendererSettings:
+    def read(reader: ByteReader) -> 'MeshRendererSettings':
         reader.read_int()  # Consume Tag
         cast_shadows = reader.read_bool()
         receive_shadows = reader.read_bool()

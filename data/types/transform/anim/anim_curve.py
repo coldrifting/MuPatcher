@@ -23,7 +23,7 @@ class AnimCurve:
             key.write(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> AnimCurve:
+    def read(reader: ByteReader) -> 'AnimCurve':
         curve_name = reader.read_str()
         curve_property = reader.read_str()
         curve_type = reader.read_int()

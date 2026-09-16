@@ -8,5 +8,5 @@ class Vec4:
     def __str__(self) -> str:
         return f'({self.x}, {self.y}, {self.z}, {self.w})'
 
-    def clone(self) -> Vec4:
+    def clone(self) -> 'Vec4':
         return Vec4(self.x, self.y, self.z, self.w)

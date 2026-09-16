@@ -19,7 +19,7 @@ class ColliderDataItemBox:
         writer.write_vec3(self.center)
 
     @staticmethod
-    def read(reader: ByteReader) -> ColliderDataItemBox:
+    def read(reader: ByteReader) -> 'ColliderDataItemBox':
         size = reader.read_vec3()
         center = reader.read_vec3()
 

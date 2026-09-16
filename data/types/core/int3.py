@@ -7,5 +7,5 @@ class Int3:
     def __str__(self) -> str:
         return f'({self.x}, {self.y}, {self.z})'
 
-    def clone(self) -> Int3:
+    def clone(self) -> 'Int3':
         return Int3(self.x, self.y, self.z)

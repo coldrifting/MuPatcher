@@ -6,5 +6,5 @@ class Int2:
     def __str__(self) -> str:
         return f'({self.x}, {self.y})'
 
-    def clone(self) -> Int2:
+    def clone(self) -> 'Int2':
         return Int2(self.x, self.y)

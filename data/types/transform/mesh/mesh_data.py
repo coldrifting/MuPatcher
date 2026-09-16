@@ -36,7 +36,7 @@ class MeshData:
             self.render_settings.write(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> MeshData:
+    def read(reader: ByteReader) -> 'MeshData':
         reader.read_int()  # Consume MeshStart Tag
         vertex_count = reader.read_int()
         submesh_count = reader.read_int()

@@ -15,7 +15,7 @@ class Texture:
         writer.write_int(self.is_normal_map)
 
     @staticmethod
-    def read(reader: ByteReader) -> Texture:
+    def read(reader: ByteReader) -> 'Texture':
         name = reader.read_str()
         is_normal_map = bool(reader.read_int())
 

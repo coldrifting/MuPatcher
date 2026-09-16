@@ -6,5 +6,5 @@ class Vec2:
     def __str__(self) -> str:
         return f'({self.x}, {self.y})'
 
-    def clone(self) -> Vec2:
+    def clone(self) -> 'Vec2':
         return Vec2(self.x, self.y)

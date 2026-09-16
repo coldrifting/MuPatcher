@@ -34,7 +34,7 @@ class SkinnedMeshData:
         self.mesh_data.write(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> SkinnedMeshData:
+    def read(reader: ByteReader) -> 'SkinnedMeshData':
         reader.read_int()  # Consume Tag
 
         material_indices = []

@@ -8,5 +8,5 @@ class ColorByte:
     def __str__(self) -> str:
         return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
 
-    def clone(self) -> ColorByte:
+    def clone(self) -> 'ColorByte':
         return ColorByte(self.r, self.g, self.b, self.a)

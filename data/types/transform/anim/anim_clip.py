@@ -23,7 +23,7 @@ class AnimClip:
             curve.write(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> AnimClip:
+    def read(reader: ByteReader) -> 'AnimClip':
         clip_name = reader.read_str()
         center = reader.read_vec3()
         size = reader.read_vec3()

@@ -14,7 +14,7 @@ class MeshDataItem:
         pass
 
     @staticmethod
-    def read(reader: ByteReader, vertex_count: int) -> MeshDataItem:
+    def read(reader: ByteReader, vertex_count: int) -> 'MeshDataItem':
         match reader.preview():
             case MuTag.MeshVertices:
                 return MeshDataItemVertices.read_sub(reader, vertex_count)
@@ -49,7 +49,7 @@ class MeshDataItemBindPoses(MeshDataItem):
             writer.write_int(pose)
 
     @staticmethod
-    def read_sub(reader: ByteReader) -> MeshDataItemBindPoses:
+    def read_sub(reader: ByteReader) -> 'MeshDataItemBindPoses':
         reader.read_int()  # Consume Tag
         num_poses = reader.read_int() * 16
 
@@ -72,7 +72,7 @@ class MeshDataItemBoneWeights(MeshDataItem):
     def __init__(self, bone_weights: list[BoneWeight]):
         self.bone_weights = bone_weights
 
-    def cut(self, cut_indices: list[int]) -> MeshDataItemBoneWeights:
+    def cut(self, cut_indices: list[int]) -> 'MeshDataItemBoneWeights':
         cut_bone_weights = []
         for i in reversed(range(len(self.bone_weights))):
             if i in cut_indices:
@@ -81,7 +81,7 @@ class MeshDataItemBoneWeights(MeshDataItem):
 
         return MeshDataItemBoneWeights(list(reversed(cut_bone_weights)))
 
-    def paste(self, pasted_bone_weights: MeshDataItemBoneWeights):
+    def paste(self, pasted_bone_weights: 'MeshDataItemBoneWeights'):
         for bone_weight in pasted_bone_weights.bone_weights:
             self.bone_weights.append(bone_weight)
 
@@ -92,7 +92,7 @@ class MeshDataItemBoneWeights(MeshDataItem):
             writer.write_vec4(bone_weight.weights)
 
     @staticmethod
-    def read_sub(reader: ByteReader, vertex_count: int) -> MeshDataItemBoneWeights:
+    def read_sub(reader: ByteReader, vertex_count: int) -> 'MeshDataItemBoneWeights':
         reader.read_int()  # Consume Tag
 
         bone_weights = []
@@ -109,7 +109,7 @@ class MeshDataItemNormals(MeshDataItem):
     def __init__(self, normals: list[Vec3]):
         self.normals = normals
 
-    def cut(self, cut_indices: list[int]) -> MeshDataItemNormals:
+    def cut(self, cut_indices: list[int]) -> 'MeshDataItemNormals':
         cut_normals = []
         for i in reversed(range(len(self.normals))):
             if i in cut_indices:
@@ -118,7 +118,7 @@ class MeshDataItemNormals(MeshDataItem):
 
         return MeshDataItemNormals(list(reversed(cut_normals)))
 
-    def paste(self, pasted_normals: MeshDataItemNormals):
+    def paste(self, pasted_normals: 'MeshDataItemNormals'):
         for normal in pasted_normals.normals:
             self.normals.append(normal)
 
@@ -128,7 +128,7 @@ class MeshDataItemNormals(MeshDataItem):
             writer.write_vec3(vertex)
 
     @staticmethod
-    def read_sub(reader: ByteReader, vertex_count: int) -> MeshDataItemNormals:
+    def read_sub(reader: ByteReader, vertex_count: int) -> 'MeshDataItemNormals':
         reader.read_int()  # Consume Tag
 
         normals = []
@@ -144,7 +144,7 @@ class MeshDataItemTangents(MeshDataItem):
     def __init__(self, tangents: list[Vec4]):
         self.tangents = tangents
 
-    def cut(self, cut_indices: list[int]) -> MeshDataItemTangents:
+    def cut(self, cut_indices: list[int]) -> 'MeshDataItemTangents':
         cut_tangents = []
         for i in reversed(range(len(self.tangents))):
             if i in cut_indices:
@@ -153,7 +153,7 @@ class MeshDataItemTangents(MeshDataItem):
 
         return MeshDataItemTangents(list(reversed(cut_tangents)))
 
-    def paste(self, pasted_tangents: MeshDataItemTangents):
+    def paste(self, pasted_tangents: 'MeshDataItemTangents'):
         for tangent in pasted_tangents.tangents:
             self.tangents.append(tangent)
 
@@ -163,7 +163,7 @@ class MeshDataItemTangents(MeshDataItem):
             writer.write_vec4(normal)
 
     @staticmethod
-    def read_sub(reader: ByteReader, vertex_count: int) -> MeshDataItemTangents:
+    def read_sub(reader: ByteReader, vertex_count: int) -> 'MeshDataItemTangents':
         reader.read_int()  # Consume Tag
 
         tangents = []
@@ -179,7 +179,7 @@ class MeshDataItemTriangles(MeshDataItem):
     def __init__(self, triangles: list[Int3]):
         self.triangles = triangles
 
-    def cut(self, cut_indices: list[int], new_mapping: dict[int,int]) -> MeshDataItemTriangles:
+    def cut(self, cut_indices: list[int], new_mapping: dict[int,int]) -> 'MeshDataItemTriangles':
         cut_triangles = []
         for i in reversed(range(len(self.triangles))):
             if (self.triangles[i].x in cut_indices) or (self.triangles[i].y in cut_indices) or (self.triangles[i].z in cut_indices):
@@ -198,7 +198,7 @@ class MeshDataItemTriangles(MeshDataItem):
 
         return MeshDataItemTriangles(list(reversed(cut_triangles)))
 
-    def paste(self, pasted_triangles: MeshDataItemTriangles, num_vertices: int):
+    def paste(self, pasted_triangles: 'MeshDataItemTriangles', num_vertices: int):
         for i in range(len(pasted_triangles.triangles)):
             self.triangles.append(Int3(
                 pasted_triangles.triangles[i].x + num_vertices,
@@ -216,7 +216,7 @@ class MeshDataItemTriangles(MeshDataItem):
             writer.write_int3(triangle)
 
     @staticmethod
-    def read_sub(reader: ByteReader) -> MeshDataItemTriangles:
+    def read_sub(reader: ByteReader) -> 'MeshDataItemTriangles':
         reader.read_int()  # Consume Tag
         num_triangles = reader.read_int()
 
@@ -234,7 +234,7 @@ class MeshDataItemUvs(MeshDataItem):
         self.uvs = uvs
         self.is_uv2 = is_uv2
 
-    def cut(self, cut_indices: list[int]) -> MeshDataItemUvs:
+    def cut(self, cut_indices: list[int]) -> 'MeshDataItemUvs':
         cut_uvs = []
         for i in reversed(range(len(self.uvs))):
             if i in cut_indices:
@@ -243,7 +243,7 @@ class MeshDataItemUvs(MeshDataItem):
 
         return MeshDataItemUvs(list(reversed(cut_uvs)), self.is_uv2)
 
-    def paste(self, pasted_uvs: MeshDataItemUvs):
+    def paste(self, pasted_uvs: 'MeshDataItemUvs'):
         for uv in pasted_uvs.uvs:
             self.uvs.append(uv)
 
@@ -257,7 +257,7 @@ class MeshDataItemUvs(MeshDataItem):
             writer.write_vec2(uv)
 
     @staticmethod
-    def read_sub(reader: ByteReader, vertex_count: int) -> MeshDataItemUvs:
+    def read_sub(reader: ByteReader, vertex_count: int) -> 'MeshDataItemUvs':
         is_uv2 = reader.read_int() == MuTag.MeshUv2
 
         uvs = []
@@ -274,7 +274,7 @@ class MeshDataItemVertexColors(MeshDataItem):
     def __init__(self, vertex_colors: list[ColorByte]):
         self.vertex_colors = vertex_colors
 
-    def cut(self, cut_indices: list[int]) -> MeshDataItemVertexColors:
+    def cut(self, cut_indices: list[int]) -> 'MeshDataItemVertexColors':
         cut_vertex_colors = []
         for i in reversed(range(len(self.vertex_colors))):
             if i in cut_indices:
@@ -283,7 +283,7 @@ class MeshDataItemVertexColors(MeshDataItem):
 
         return MeshDataItemVertexColors(list(reversed(cut_vertex_colors)))
 
-    def paste(self, pasted_vertex_colors: MeshDataItemVertexColors):
+    def paste(self, pasted_vertex_colors: 'MeshDataItemVertexColors'):
         for vertex_color in pasted_vertex_colors.vertex_colors:
             self.vertex_colors.append(vertex_color)
 
@@ -293,7 +293,7 @@ class MeshDataItemVertexColors(MeshDataItem):
             writer.write_color_byte(vertex)
 
     @staticmethod
-    def read_sub(reader: ByteReader, vertex_count: int) -> MeshDataItemVertexColors:
+    def read_sub(reader: ByteReader, vertex_count: int) -> 'MeshDataItemVertexColors':
         reader.read_int()  # Consume Tag
 
         vertex_colors = []
@@ -309,7 +309,7 @@ class MeshDataItemVertices(MeshDataItem):
     def __init__(self, vertices: list[Vec3]):
         self.vertices = vertices
 
-    def cut(self, cut_indices: list[int]) -> MeshDataItemVertices:
+    def cut(self, cut_indices: list[int]) -> 'MeshDataItemVertices':
         cut_vertices = []
         for i in reversed(range(len(self.vertices))):
             if i in cut_indices:
@@ -318,7 +318,7 @@ class MeshDataItemVertices(MeshDataItem):
 
         return MeshDataItemVertices(list(reversed(cut_vertices)))
 
-    def paste(self, pasted_vertices: MeshDataItemVertices):
+    def paste(self, pasted_vertices: 'MeshDataItemVertices'):
         for vertex in pasted_vertices.vertices:
             self.vertices.append(vertex)
 
@@ -328,7 +328,7 @@ class MeshDataItemVertices(MeshDataItem):
             writer.write_vec3(vertex)
 
     @staticmethod
-    def read_sub(reader: ByteReader, vertex_count: int) -> MeshDataItemVertices:
+    def read_sub(reader: ByteReader, vertex_count: int) -> 'MeshDataItemVertices':
         reader.read_int()  # Consume Tag
 
         vertices = []

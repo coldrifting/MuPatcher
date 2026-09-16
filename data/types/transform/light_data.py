@@ -23,7 +23,7 @@ class LightData:
         writer.write_float(self.spot_angle)
 
     @staticmethod
-    def read(reader: ByteReader) -> LightData:
+    def read(reader: ByteReader) -> 'LightData':
         reader.read_int()  # Consume Tag
         light_type = reader.read_int()
         intensity = reader.read_float()

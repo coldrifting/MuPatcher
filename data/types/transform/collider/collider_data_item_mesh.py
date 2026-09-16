@@ -19,7 +19,7 @@ class ColliderDataItemMesh:
         self.mesh_data.write(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> ColliderDataItemMesh:
+    def read(reader: ByteReader) -> 'ColliderDataItemMesh':
         is_convex = reader.read_bool()
         mesh_data = MeshData.read(reader)
 

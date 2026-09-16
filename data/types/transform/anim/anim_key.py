@@ -16,7 +16,7 @@ class AnimKey:
         writer.write_int(self.tangent_mode)
 
     @staticmethod
-    def read(reader: ByteReader) -> AnimKey:
+    def read(reader: ByteReader) -> 'AnimKey':
         time = reader.read_float()
         value = reader.read_float()
         tangent_in_out = reader.read_vec2()

@@ -19,7 +19,7 @@ class ColliderDataItemSphere:
         writer.write_vec3(self.center)
 
     @staticmethod
-    def read(reader: ByteReader) -> ColliderDataItemSphere:
+    def read(reader: ByteReader) -> 'ColliderDataItemSphere':
         radius = reader.read_float()
         center = reader.read_vec3()
 

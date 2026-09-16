@@ -33,7 +33,7 @@ class ColliderData:
             raise Exception(f"Invalid collider: No collider shape data attached")
 
     @staticmethod
-    def read(reader: ByteReader) -> ColliderData:
+    def read(reader: ByteReader) -> 'ColliderData':
         tag = reader.read_int()
 
         is_trigger = None

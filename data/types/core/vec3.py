@@ -7,5 +7,5 @@ class Vec3:
     def __str__(self) -> str:
         return f'({self.x}, {self.y}, {self.z})'
 
-    def clone(self) -> Vec3:
+    def clone(self) -> 'Vec3':
         return Vec3(self.x, self.y, self.z)

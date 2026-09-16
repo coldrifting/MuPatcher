@@ -8,5 +8,5 @@ class Int4:
     def __str__(self) -> str:
         return f'({self.x}, {self.y}, {self.z}, {self.w})'
 
-    def clone(self) -> Int4:
+    def clone(self) -> 'Int4':
         return Int4(self.x, self.y, self.z, self.w)

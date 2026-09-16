@@ -11,7 +11,7 @@ class MaterialProperty:
     def __str__(self) -> str:
         return self.name
 
-    def clone(self: MaterialProperty) -> MaterialProperty:
+    def clone(self: 'MaterialProperty') -> 'MaterialProperty':
         match self:
             case MaterialPropertyColor():
                 return MaterialPropertyColor(self.name, self.color.clone())
@@ -32,7 +32,7 @@ class MaterialProperty:
         self.write_base(writer)
 
     @staticmethod
-    def read(reader: ByteReader) -> MaterialProperty:
+    def read(reader: ByteReader) -> 'MaterialProperty':
         prop_name = reader.read_str()
         prop_type = reader.read_int()
 

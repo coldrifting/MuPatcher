@@ -92,7 +92,7 @@ class MuFile:
         return writer.output_data
 
     @staticmethod
-    def read(reader: ByteReader) -> MuFile:
+    def read(reader: ByteReader) -> 'MuFile':
         # Skip Header
         reader.read_int()
         reader.read_int()
@@ -130,7 +130,7 @@ class MuFile:
             f.write(output)
 
     @staticmethod
-    def read_file(filename: Path) -> MuFile:
+    def read_file(filename: Path) -> 'MuFile':
         with open(filename, "rb") as f:
             data = f.read()
 
