@@ -9,6 +9,7 @@ from data.types.material.texture import Texture
 from data.types.mu_tag import MuTag
 from data.types.mu_transform import Transform
 from data.types.transform.mesh.mesh_data import MeshData
+from data.utils.errors import AttributeNotFoundError
 
 
 class MuFile:
@@ -36,21 +37,21 @@ class MuFile:
             for child in transform.children:
                 queue.append(child)
 
-        raise Exception(f'Transform with mesh data with name {mesh_name} not found in file')
+        raise AttributeNotFoundError(f'Transform with mesh data with name {mesh_name} not found in file')
 
     def get_material(self, material_name) -> Material:
         for material in self.materials:
             if material.name == material_name:
                 return material
 
-        raise Exception(f'Material with name {material_name} not found in file')
+        raise AttributeNotFoundError(f'Material with name {material_name} not found in file')
 
-    def get_material_index(self, material_name):
+    def get_material_index(self, material_name) -> int:
         for index, material in enumerate(self.materials):
             if material.name == material_name:
                 return index
 
-        raise Exception(f'Material with name {material_name} not found in file')
+        raise AttributeNotFoundError(f'Material with name {material_name} not found in file')
 
     def get_property(self, material_name, property_name) -> MaterialProperty:
         material = self.get_material(material_name)
@@ -58,7 +59,12 @@ class MuFile:
             if material_property.name == property_name:
                 return material_property
 
-        raise Exception(f'Property with name {property_name} not found in material {material_name}')
+    def get_texture_index(self, texture_name) -> int:
+        for index, texture in enumerate(self.textures):
+            if texture.name == texture_name:
+                return index
+
+        raise AttributeNotFoundError(f'Texture with name {texture_name} not found in file. Did you forget a file extension?')
 
 
     def write(self, writer: ByteWriter | None = None) -> bytes:

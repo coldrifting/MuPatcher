@@ -9,10 +9,9 @@ An example config file is shared below:
 #### patch.yaml
 ```yaml patch.yaml
 game_data_dir: "C:/Steam/steamapps/common/Kerbal Space Program/GameData"
-source_dir: "ReStockPBR"
 dest_dir: "ReStockPBR_Patch"
 files:
-  - path: "Assets/Command/restock-pbr-cockpit-mk2-1.mu"
+  - path: "RestockPBR/Assets/Command/restock-pbr-cockpit-mk2-1.mu"
     operations:
       - name: "mesh_edit_tris_transfer"
         src_mesh_name: "Mk2CockpitPointyTiles"
@@ -26,7 +25,7 @@ files:
         tc1_preset: "tileBlack"
         tc2_preset: "blank"
       - name: "mesh_assign_material"
-        mesh_name: "Mk2CockpitPointyTilesLower"
+        transform_name: "Mk2CockpitPointyTilesLower"
         material_name: "restock-pbr-cockpit-mk2-1-tiles"
 ```
 
@@ -34,11 +33,11 @@ To try it out, save the above patch.yaml file somewhere, make sure you have the 
 Then run the following command, changing `/path/to/patch.yaml` to where you saved the file:
 
 `
-python patch_models.py /path/to/patch.yaml
+python mu_patcher.py /path/to/patch.yaml
 `
 
 This config file moves some faces from one transform to another in order to get all the areas with added tiles from ReStockPBR onto one transform/mesh.
-Once this is done, the material is duplicated and edited, allowing for correct looking part thumbnail visuals. 
+Once this is done, the material assigned to the tiles mesh is duplicated and edited, allowing for correct looking part thumbnail visuals. 
 
 This example also shows off some of the included convenience functions for setting mesh default materials to use ReStockPBR/Technicolor's default swatches.
 There is also a function `team_colors_add`, which will let you easily add the Technicolor `Resurfaced/Standard (TC)` shader and its prerequisite textures, floats, and colors to the material settings.

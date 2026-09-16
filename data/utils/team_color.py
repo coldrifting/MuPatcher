@@ -1,4 +1,5 @@
 from data.types.core.vec4 import Vec4
+from data.utils.errors import AttributeInvalidError
 
 
 class TeamColor:
@@ -22,7 +23,7 @@ class TeamColor:
             color_formatted = color_formatted.lstrip("#")
 
         if len(color_formatted) != 6 or len(color_formatted) != 8:
-            raise Exception(f"Invalid color format: {color}")
+            raise AttributeInvalidError(f"Invalid color format: {color}")
 
         r = float(color_formatted[0:2]) / 255.0
         g = float(color_formatted[2:4]) / 255.0

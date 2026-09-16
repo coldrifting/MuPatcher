@@ -11,3 +11,6 @@ class TerminalColors:
 
 def warn(msg: str):
     print(TerminalColors.WARNING + msg + TerminalColors.ENDC)
+
+def error(msg: str):
+    print(TerminalColors.FAIL + "ERROR: " + msg + TerminalColors.ENDC)

@@ -16,4 +16,4 @@ def property_edit(data: MuFile, material_name: str, property_name: str, value):
         case MaterialPropertyFloat3():
             prop.value = value
         case MaterialPropertyTexture():
-            prop.texture_index = value
+            prop.texture_index = data.get_texture_index(value)
