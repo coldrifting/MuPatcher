@@ -133,9 +133,9 @@ try:
                     texture_edit(mu_data, op["texture_name"], op["new_texture_name"], op.get("is_normal_map", False))
 
                 case "team_colors_add":
-                    team_colors_add(mu_data, op["material_name"], op["tc1_preset"], op["tc1_preset"])
+                    team_colors_add(mu_data, op["material_name"], op["tc1_preset"], op["tc2_preset"])
                 case "team_colors_edit":
-                    team_colors_edit(mu_data, op["material_name"], op["tc1_preset"], op["tc1_preset"])
+                    team_colors_edit(mu_data, op["material_name"], op["tc1_preset"], op["tc2_preset"])
 
                 case "transform_duplicate":
                     transform_duplicate(mu_data, op["transform_name"], op["new_transform_name"])
