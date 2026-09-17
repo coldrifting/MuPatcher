@@ -11,6 +11,8 @@ from data.operations.material_add import material_add
 from data.operations.material_copy import material_copy
 from data.operations.mesh_assign_material import mesh_assign_material
 from data.operations.mesh_average_normals import mesh_average_normals
+from data.operations.mesh_edit_set_uvs import mesh_edit_set_uvs
+from data.operations.mesh_edit_set_vertices import mesh_edit_set_vertices
 from data.operations.mesh_edit_tris_remove import mesh_edit_tris_remove
 from data.operations.mesh_edit_tris_transfer import mesh_edit_tris_transfer
 from data.operations.mesh_remove import mesh_remove
@@ -20,12 +22,15 @@ from data.operations.shader_edit import shader_edit
 from data.operations.texture_add import texture_add
 from data.operations.texture_edit import texture_edit
 from data.operations.transform_duplicate import transform_duplicate
+from data.operations.transform_merge import transform_merge
 from data.operations.transform_remove import transform_remove
 from data.types.mu_file import MuFile
 from data.utils.errors import AttributeInvalidError, AttributeNotFoundError, AttributeAlreadyExistsError
 from data.utils.get_or_error import get_or_error
 from data.utils.get_groups import get_groups
 from data.utils.get_range import get_range
+from data.utils.get_uv_data import get_uv_data
+from data.utils.get_vertex_data import get_vertex_data
 from data.utils.terminal_colors import warn, error
 
 print("[Patching Meshes]")
@@ -101,6 +106,10 @@ try:
                     mesh_average_normals(mu_data, op["transform_name"], get_groups(op["vertex_groups"]))
                 case "mesh_change_team_colors":
                     mesh_change_team_colors(mu_data, op["transform_name"], op["material_suffix"], op["tc1_preset"], op["tc2_preset"])
+                case "mesh_edit_set_uvs":
+                    mesh_edit_set_uvs(mu_data, op["transform_name"], get_uv_data(op["uvs"]))
+                case "mesh_edit_set_vertices":
+                    mesh_edit_set_vertices(mu_data, op["transform_name"], get_vertex_data(op["vertices"]))
                 case "mesh_edit_tris_remove":
                     mesh_edit_tris_remove(mu_data, op["transform_name"], get_range(op["tris"]))
                 case "mesh_edit_tris_transfer":
@@ -119,7 +128,7 @@ try:
                     shader_edit(mu_data, op["material_name"], op["shader_name"])
 
                 case "texture_add":
-                    texture_add(mu_data, op["texture_name"], op["is_normal_map"])
+                    texture_add(mu_data, op["texture_name"], op.get("is_normal_map", False))
                 case "texture_edit":
                     texture_edit(mu_data, op["texture_name"], op["new_texture_name"], op.get("is_normal_map", False))
 
@@ -130,6 +139,8 @@ try:
 
                 case "transform_duplicate":
                     transform_duplicate(mu_data, op["transform_name"], op["new_transform_name"])
+                case "transform_merge":
+                    transform_merge(mu_data, op["transform_name_primary"], op["transform_name_secondary"])
                 case "transform_remove":
                     transform_remove(mu_data, op["transform_name"])
 

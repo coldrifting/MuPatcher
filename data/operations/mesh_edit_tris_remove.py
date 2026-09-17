@@ -5,7 +5,7 @@ from data.types.transform.mesh.mesh_data import MeshData
 from data.types.transform.mesh.mesh_data_item import MeshDataItemTriangles, MeshDataItemVertices, MeshDataItemNormals
 
 
-def reindex(vertices: MeshDataItemVertices, triangles: MeshDataItemTriangles, vertex_indices_to_remove: set[int]):
+def reindex(vertices: MeshDataItemVertices, triangles: MeshDataItemTriangles, vertex_indices_to_remove: set[int], tris_to_remove: set[int]):
     new_vertex_index_map: list[int] = [-1 for _ in range(0,len(vertices.vertices))]
 
     count = 0
@@ -21,7 +21,7 @@ def reindex(vertices: MeshDataItemVertices, triangles: MeshDataItemTriangles, ve
         new_x = new_vertex_index_map[triangle.x]
         new_y = new_vertex_index_map[triangle.y]
         new_z = new_vertex_index_map[triangle.z]
-        if new_x == -1 or new_y == -1 or new_z == -1:
+        if new_x == -1 or new_y == -1 or new_z == -1 or index in tris_to_remove:
             del triangles.triangles[index]
         else:
             triangles.triangles[index] = Int3(new_x, new_y, new_z)
@@ -56,5 +56,5 @@ def mesh_edit_tris_remove_mesh_data(mesh_data: MeshData, tris: set[int]):
         if mesh_data.items.get(tag) is not None:
             mesh_data.items[tag].delete(remain_vertex_indices_to_remove)
 
-    reindex(mesh_data.items[MuTag.MeshVertices], mesh_data.items[MuTag.MeshTriangles], remain_vertex_indices_to_remove)
+    reindex(mesh_data.items[MuTag.MeshVertices], mesh_data.items[MuTag.MeshTriangles], remain_vertex_indices_to_remove, tris)
     mesh_data.vertex_count = len(mesh_data.items[MuTag.MeshVertices].vertices)

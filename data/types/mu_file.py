@@ -23,6 +23,20 @@ class MuFile:
     def __str__(self) -> str:
         return self.name
 
+    def get_transform(self, transform_name: str) -> Transform:
+        queue: deque[Transform] = deque()
+        queue.append(self.root_transform)
+
+        while len(queue) > 0:
+            transform: Transform = queue.pop()
+            if transform.name == transform_name:
+                return transform
+
+            for child in transform.children:
+                queue.append(child)
+
+        raise AttributeNotFoundError(f'Transform with name {transform_name} not found in file')
+
     def get_mesh(self, mesh_name: str) -> MeshData:
         queue: deque[Transform] = deque()
         queue.append(self.root_transform)
@@ -54,6 +68,29 @@ class MuFile:
                 queue.append(child.children)
 
         raise AttributeNotFoundError(f'Transform with name {transform_name} not found in file')
+
+    def delete_transform(self, transform_name: str):
+        queue: deque[list[Transform]] = deque()
+        queue.append(self.root_transform.children)
+
+        while len(queue) > 0:
+            transforms: list[Transform] = queue.pop()
+            for index, child in enumerate(transforms):
+                if child.name == transform_name:
+                    del transforms[index]
+                    return
+
+                queue.append(child.children)
+
+        raise AttributeNotFoundError(f'Transform with name {transform_name} not found in file')
+
+
+    def merge_transforms(self, transform_name_primary: str, transform_name_secondary: str):
+        primary_mesh = self.get_mesh(transform_name_primary)
+        secondary_mesh = self.get_mesh(transform_name_secondary)
+
+        primary_mesh.merge(secondary_mesh)
+        self.delete_transform(transform_name_secondary)
 
 
     def get_material(self, material_name) -> Material:
